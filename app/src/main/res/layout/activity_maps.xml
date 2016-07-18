@@ -1,0 +1,86 @@
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    >
+    
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:elevation="@dimen/appbar_elevation"
+        >
+        
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:id="@+id/logo"
+                    android:gravity="center_horizontal"
+                    android:padding="@dimen/appbar_elevation">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/app_name"
+                        android:textSize="24sp"
+                        android:textColor="#FFF"
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_below="@+id/logo"
+                    >
+
+                    <AutoCompleteTextView
+                        android:textColor="#FFF"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/auto_to_loc"
+                        android:hint="@string/autocomplete_hint_source"
+                        android:singleLine="true"/>
+
+                    <AutoCompleteTextView
+                        android:textColor="#FFF"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/auto_to_des"
+                        android:hint="@string/autocomplete_hint_des"
+                        android:singleLine="true"/>
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.Toolbar>
+        
+    </android.support.design.widget.AppBarLayout>
+
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.example.www.transit.MapsActivity"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        />
+
+</android.support.design.widget.CoordinatorLayout>
+
+
