@@ -1,4 +1,4 @@
-package com.example.www.transit;
+package com.example.www.transit.adapters;
 
 import android.content.Context;
 import android.graphics.Typeface;

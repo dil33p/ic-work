@@ -46,6 +46,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:layout_below="@+id/logo"
+                    android:id="@+id/after"
                     >
 
                     <AutoCompleteTextView
@@ -66,20 +67,37 @@
 
                 </LinearLayout>
 
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/after"
+                    android:text="find routes"
+                    android:id="@+id/find"/>
+
             </RelativeLayout>
 
         </android.support.v7.widget.Toolbar>
         
     </android.support.design.widget.AppBarLayout>
 
-    <fragment
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/card_list"
+        android:scrollbars="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        />
+
+
+
+    <!--<fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="com.example.www.transit.MapsActivity"
         xmlns:map="http://schemas.android.com/apk/res-auto"
-        />
+        />-->
 
 </android.support.design.widget.CoordinatorLayout>
 
