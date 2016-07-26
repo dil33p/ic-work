@@ -47,6 +47,7 @@
                     android:orientation="vertical"
                     android:layout_below="@+id/logo"
                     android:id="@+id/after"
+                    android:padding="16dp"
                     >
 
                     <AutoCompleteTextView

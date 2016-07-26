@@ -17,6 +17,8 @@ public class Legs {
     public String startAddress;
     public LatLng startLocation;
     public List<Steps> steps;
+    public Ctime arrivalTime;
+    public Ctime DepartureTime;
 
     public Legs() {
         steps = new ArrayList<Steps>();
@@ -24,6 +26,22 @@ public class Legs {
 
     public Distance getDistance() {
         return distance;
+    }
+
+    public Ctime getArrivalTime() {
+        return arrivalTime;
+    }
+
+    public void setArrivalTime(Ctime arrivalTime) {
+        this.arrivalTime = arrivalTime;
+    }
+
+    public Ctime getDepartureTime() {
+        return DepartureTime;
+    }
+
+    public void setDepartureTime(Ctime departureTime) {
+        DepartureTime = departureTime;
     }
 
     public void setDistance(Distance distance) {
@@ -82,3 +100,4 @@ public class Legs {
         this.steps.add(step);
     }
 }
+

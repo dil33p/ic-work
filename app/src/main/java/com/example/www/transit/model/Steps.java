@@ -8,13 +8,14 @@ import java.util.List;
  * Created by jaskaran on 20/7/16.
  */
 public class Steps {
-    private Distance distance;
-    private Duration duration;
-    private LatLng endLocation;
-    private LatLng startLocation;
-    private String htmlInstructions;
-    private String travelMode;
-    private List<LatLng> points;
+
+    public Distance distance;
+    public Duration duration;
+    public LatLng endLocation;
+    public LatLng startLocation;
+    public String htmlInstructions;
+    public String travelMode;
+    public List<LatLng> points;
 
     public List<LatLng> getPoints() {
         return points;

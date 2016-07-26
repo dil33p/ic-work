@@ -2,6 +2,8 @@ package com.example.www.transit.utils;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,4 +53,6 @@ public class Utils {
         int a = Integer.parseInt(distance);
         return a/1000;
     }
+
+
 }

@@ -9,7 +9,6 @@ import android.widget.TextView;
 import com.example.www.transit.R;
 import com.example.www.transit.model.Legs;
 import com.example.www.transit.model.Routes;
-import com.example.www.transit.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,9 +35,12 @@ public class RoutesAdapter extends RecyclerView.Adapter<RoutesAdapter.ViewHolder
     public void onBindViewHolder(ViewHolder holder, int position) {
         final Routes route = mRoutesList.get(position);
         final Legs leg = mLegsList.get(position);
-        holder.summary.setText(route.getSummary());
-        holder.distance.setText(Utils.toKms(String.valueOf(leg.distance.getValue())) + "Kms");
-        holder.duration.setText(String.valueOf(leg.duration.getValue()));
+        holder.startAddress.setText(leg.getStartAddress());
+        holder.endAddress.setText(leg.getEndAddress());
+        holder.departureTime.setText(leg.DepartureTime.getText());
+        holder.arrivalTime.setText(leg.arrivalTime.getText());
+        holder.distance.setText(leg.distance.getText());
+        holder.duration.setText(leg.duration.getText());
     }
 
     @Override
@@ -48,13 +50,19 @@ public class RoutesAdapter extends RecyclerView.Adapter<RoutesAdapter.ViewHolder
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
-        public TextView summary;
+        public TextView startAddress;
+        public TextView endAddress;
+        public TextView arrivalTime;
+        public TextView departureTime;
         public TextView distance;
         public TextView duration;
 
         public ViewHolder(View view){
             super(view);
-            summary = (TextView) view.findViewById(R.id.summary);
+            startAddress = (TextView) view.findViewById(R.id.start_address);
+            endAddress = (TextView) view.findViewById(R.id.end_address);
+            arrivalTime = (TextView) view.findViewById(R.id.arrival_time);
+            departureTime = (TextView) view.findViewById(R.id.departure_time);
             distance = (TextView) view.findViewById(R.id.distance);
             duration = (TextView) view.findViewById(R.id.duration);
         }

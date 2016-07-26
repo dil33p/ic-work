@@ -23,13 +23,12 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.www.transit.adapters.PlaceAutoCompleteAdapter;
 import com.example.www.transit.adapters.RoutesAdapter;
-import com.example.www.transit.model.Distance;
-import com.example.www.transit.model.Duration;
-import com.example.www.transit.model.Legs;
-import com.example.www.transit.model.Routes;
-import com.example.www.transit.model.Steps;
+
+import com.example.www.transit.model.*;
+
 import com.example.www.transit.utils.GoogleMapsConstants;
 import com.example.www.transit.utils.Utils;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -96,7 +95,7 @@ public class MapsActivity extends AppCompatActivity implements
             public void onClick(View v) {
                 String source = mSourceAutoText.getText().toString();
                 String destination = mDesAutoText.getText().toString();
-                String mode = GoogleMapsConstants.MODES.DRIVING;
+                String mode = GoogleMapsConstants.MODES.TRANSIT;
                 if (source.isEmpty()){
                     Toast.makeText(context, "Enter Source destination", Toast.LENGTH_SHORT).show();
                     return;
@@ -113,6 +112,8 @@ public class MapsActivity extends AppCompatActivity implements
                     e.printStackTrace();
                     Log.e("Error in url", e.toString());
                 }
+                mRoutesList.clear();
+                mLegsList.clear();
                 getData(url);
                 setUpRecyclerView(mRecylcerView);
             }
@@ -261,12 +262,44 @@ public class MapsActivity extends AppCompatActivity implements
                             legJSONObject = legsJSONArray.getJSONObject(j);
                             leg.setDistance(new Distance(legJSONObject.optJSONObject("distance").optString("text"), legJSONObject.optJSONObject("distance").optLong("value")));
                             leg.setDuration(new Duration(legJSONObject.optJSONObject("duration").optString("text"), legJSONObject.optJSONObject("duration").optLong("value")));
+                            leg.setArrivalTime(new Ctime(legJSONObject.optJSONObject("arrival_time").optString("text"), legJSONObject.optJSONObject("arrival_time").optString("time_zone"), legJSONObject.optJSONObject("arrival_time").optLong("value")));
+                            leg.setDepartureTime(new Ctime(legJSONObject.optJSONObject("departure_time").optString("text"), legJSONObject.optJSONObject("departure_time").optString("time_zone"), legJSONObject.optJSONObject("departure_time").optLong("value")));
+                            leg.setStartAddress(legJSONObject.getString("start_address"));
+                            leg.setEndAddress(legJSONObject.getString("end_address"));
+
                             stepsJSONArray = legJSONObject.getJSONArray("steps");
-                            JSONObject stepJSONObject, stepDurationJSONObject, legPolyLineJSONObject, stepStartLocationJSONObject, stepEndLocationJSONObject;
+                            JSONObject stepJSONObject, stepDurationJSONObject, legPolyLineJSONObject, stepStartLocationJSONObject, stepEndLocationJSONObject, stepTransitDetails;
+
+                            JSONObject transitArrivalStopJsonObject, transitDepartureStopJsonObject;
+                            JSONObject arrivalStopLocJsonObject, departureStopLocJsonObject;
+
+                            Location arrivalStopLoc, departureStopLoc;
+
+                            Stops arrivalStop, departureStop;
+                            TransitDetails transitDetail;
+
+                            JSONObject arrivalTimeJsonObject, departureTimeJsonObject;
+
+                            Ctime arrivalTime, departureTime;
+                            String headsign = null;
+                            String stepTravelMode = null;
+
+                            JSONObject lineJsonObject, vehicleJsonObject;
+                            Line line;
+                            Vehicle vehicle;
+                            int numStops;
+
                             Steps step;
+                            TransitSteps tStep;
                             String encodedString;
                             LatLng stepStartLocationLatLng, stepEndLocationLatLng;
+
+                            CustomSteps cStep;
+                            JSONArray cStepJsonArray;
+                            JSONObject cStepJsonObject;
+
                             for (int k=0; k<stepsJSONArray.length(); k++){
+
                                 stepJSONObject = stepsJSONArray.getJSONObject(k);
                                 step = new Steps();
                                 JSONObject stepDistanceJSONObject = stepJSONObject.getJSONObject("distance");
@@ -283,6 +316,82 @@ public class MapsActivity extends AppCompatActivity implements
                                 stepStartLocationJSONObject = stepJSONObject.getJSONObject("start_location");
                                 stepStartLocationLatLng = new LatLng(stepStartLocationJSONObject.getDouble("lat"), stepStartLocationJSONObject.getDouble("lng"));
                                 step.setStartLocation(stepStartLocationLatLng);
+
+                                stepTravelMode = stepJSONObject.getString("travel_mode");
+
+
+                                if (stepTravelMode == GoogleMapsConstants.MODES.TRANSIT &&
+                                        stepJSONObject.has("transit_details")){
+                                    tStep = new TransitSteps();
+                                    stepTransitDetails = stepJSONObject.getJSONObject("transit_details");
+
+                                    transitArrivalStopJsonObject = stepTransitDetails.getJSONObject("arrival_stop");
+                                    arrivalStopLocJsonObject = transitArrivalStopJsonObject.getJSONObject("location");
+                                    arrivalStopLoc = new Location(arrivalStopLocJsonObject.getDouble("lat"), arrivalStopLocJsonObject.getDouble("lng"));
+
+                                    arrivalStop = new Stops(arrivalStopLoc, transitArrivalStopJsonObject.getString("name"));
+
+                                    arrivalTimeJsonObject = stepTransitDetails.getJSONObject("arrivalTime");
+                                    arrivalTime = new Ctime(arrivalTimeJsonObject.getString("text"), arrivalTimeJsonObject.getString("time_zone"), arrivalTimeJsonObject.getLong("value"));
+
+                                    transitDepartureStopJsonObject = stepTransitDetails.getJSONObject("departure_stop");
+                                    departureStopLocJsonObject = transitDepartureStopJsonObject.getJSONObject("location");
+                                    departureStopLoc = new Location(departureStopLocJsonObject.getDouble("lat"), departureStopLocJsonObject.getDouble("lng"));
+
+                                    departureStop = new Stops(departureStopLoc, transitDepartureStopJsonObject.getString("name"));
+
+                                    departureTimeJsonObject = stepTransitDetails.getJSONObject("departure_time");
+                                    departureTime = new Ctime(departureTimeJsonObject.getString("text"), departureTimeJsonObject.getString("time_zone"), departureTimeJsonObject.getLong("value"));
+
+                                    headsign = stepTransitDetails.getString("headsign");
+
+                                    lineJsonObject = stepTransitDetails.getJSONObject("line");
+                                    vehicleJsonObject = stepTransitDetails.getJSONObject("vehicle");
+                                    vehicle = new Vehicle(vehicleJsonObject.getString("icon"), vehicleJsonObject.getString("name"), vehicleJsonObject.getString("type"));
+
+                                    line = new Line(lineJsonObject.getString("name"), vehicle);
+                                    numStops = stepTransitDetails.getInt("num_stops");
+                                    transitDetail = new TransitDetails(arrivalStop, arrivalTime, departureStop, departureTime, headsign, line, numStops);
+                                    tStep.setTransitDetails(transitDetail);
+                                }
+
+                                else if (stepTravelMode == GoogleMapsConstants.MODES.WALKING &&
+                                        stepJSONObject.has("steps")){
+                                    cStep = new CustomSteps();
+                                    cStepJsonArray = stepJSONObject.getJSONArray("steps");
+                                    for (int x=0; x<cStepJsonArray.length(); x++){
+                                        cStepJsonObject = cStepJsonArray.getJSONObject(x);
+
+                                        JSONObject cDistanceJsonObject = cStepJsonObject.getJSONObject("distance");
+                                        Distance cDistance = new Distance(cDistanceJsonObject.getString("text"), cDistanceJsonObject.getLong("value"));
+
+                                        JSONObject cDurationJsonObject = cStepJsonObject.getJSONObject("duration");
+                                        Duration cDuration = new Duration(cDurationJsonObject.getString("text"), cDurationJsonObject.getLong("value"));
+
+                                        JSONObject cEndLocationJsonObject = cStepJsonObject.getJSONObject("end_location");
+                                        LatLng cEndLocation = new LatLng(cEndLocationJsonObject.getLong("lat"), cEndLocationJsonObject.getLong("lng"));
+
+                                        String htmlInstructions = cStepJsonObject.getString("html_instructions");
+
+                                        JSONObject cPolylinesJsonObject = cStepJsonObject.getJSONObject("polyline");
+                                        String codedString = cPolylinesJsonObject.getString("points");
+
+                                        JSONObject cStartLocationJsonObject = cStepJsonObject.getJSONObject("start_location");
+                                        LatLng cStartLocation = new LatLng(cStartLocationJsonObject.getLong("lat"), cStartLocationJsonObject.getLong("lng"));
+
+                                        cStep.setDistance(cDistance);
+                                        cStep.setDuration(cDuration);
+                                        cStep.setEndLocation(cEndLocation);
+                                        cStep.setHtmlInstructions(htmlInstructions);
+                                        cStep.setPoints(Utils.decodePolyLines(codedString));
+                                        cStep.setStartLocation(cStartLocation);
+                                        cStep.setTravelMode(cStepJsonObject.getString("travel_mode"));
+
+                                    }
+                                    cStep.addSteps(cStep);
+
+                                }
+
                                 leg.addStep(step);
                             }
                             route.addLeg(leg);
@@ -313,14 +422,13 @@ public class MapsActivity extends AppCompatActivity implements
     }
 
     private void setUpRecyclerView(RecyclerView recyclerView){
-
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
         recyclerView.setLayoutManager(mLinearLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mRecyclerAdapter);
     }
 
-    private String constructUrl(String source, String destination, String mode) throws UnsupportedEncodingException{
+    private String constructUrl(String source, String destination, String mode) throws UnsupportedEncodingException {
         StringBuilder builder = new StringBuilder();
         builder.append(GoogleMapsConstants.BASE_URL);
         builder.append(GoogleMapsConstants.RESPONSE_TYPE);
@@ -345,7 +453,5 @@ public class MapsActivity extends AppCompatActivity implements
         return builder;
     }
 
-
-    // TODO: CHANGE THE MODEL AND PARSE JSON AND SUBMIT BEFORE 3PM. DONT USE MAPS CREATE NEW INTENT AND SHOW ALL SERIALIZED DATA IN NEW INTENT ON BUTTON CLICK.
-    // TODO: RECYCLER VIEW SHOULD HAVE TOTAL DISTANCE, SUMMARY AND DURATION; DONT USE LEGS ONLY OVERVIEW DATA.
+    // TODO: Modify Json parsing
 }
