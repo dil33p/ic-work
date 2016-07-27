@@ -1,9 +1,8 @@
 package com.example.www.transit.utils;
 
+import com.example.www.transit.R;
 import com.google.android.gms.maps.model.LatLng;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,5 +53,14 @@ public class Utils {
         return a/1000;
     }
 
+    public static int getIconResource(String mode){
+        if (mode == "TRANSIT"){
+            return R.drawable.ic_directions_transit_black_24dp;
+        } else if (mode == "WALKING"){
+            return R.drawable.ic_directions_walk_black_24dp;
+        }
+        //return -1;
+        return R.drawable.ic_directions_walk_black_24dp;
+    }
 
 }

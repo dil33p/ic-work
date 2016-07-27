@@ -1,6 +1,7 @@
 package com.example.www.transit;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -23,12 +24,21 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.www.transit.adapters.PlaceAutoCompleteAdapter;
 import com.example.www.transit.adapters.RoutesAdapter;
-
-import com.example.www.transit.model.*;
-
+import com.example.www.transit.model.Ctime;
+import com.example.www.transit.model.CustomSteps;
+import com.example.www.transit.model.Distance;
+import com.example.www.transit.model.Duration;
+import com.example.www.transit.model.Legs;
+import com.example.www.transit.model.Line;
+import com.example.www.transit.model.Location;
+import com.example.www.transit.model.Routes;
+import com.example.www.transit.model.Steps;
+import com.example.www.transit.model.Stops;
+import com.example.www.transit.model.TransitDetails;
+import com.example.www.transit.model.TransitSteps;
+import com.example.www.transit.model.Vehicle;
 import com.example.www.transit.utils.GoogleMapsConstants;
 import com.example.www.transit.utils.Utils;
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -49,7 +59,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MapsActivity extends AppCompatActivity implements
-        GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
+        GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, RoutesAdapter.OnAdapterItemSelectedListener{
 
     private Button findRoutes;
 
@@ -68,6 +78,7 @@ public class MapsActivity extends AppCompatActivity implements
 
     private List<Routes> mRoutesList = new ArrayList<Routes>();
     private List<Legs> mLegsList = new ArrayList<Legs>();
+    //private List<Steps> mStepsList = new ArrayList<Steps>();
 
     private RequestQueue mRequestQueue;
 
@@ -84,7 +95,7 @@ public class MapsActivity extends AppCompatActivity implements
         mRequestQueue = Volley.newRequestQueue(this);
 
         mRecylcerView = (RecyclerView) findViewById(R.id.card_list);
-        mRecyclerAdapter = new RoutesAdapter(mRoutesList, mLegsList);
+        mRecyclerAdapter = new RoutesAdapter(mRoutesList, mLegsList, context);
         mLinearLayoutManager = new LinearLayoutManager(this);
 
         //url = "https://maps.googleapis.com/maps/api/directions/json?origin=Mathikere,Bengaluru,Karnataka560054&destination=ElectronicCity,Phase1,BusStop,HewlettPackardAvenue,KonappanaAgrahara,ElectronicCity,Bengaluru,Karnataka560100&mode=driving&alternatives=true&key=" + GoogleMapsConstants.API_KEY;
@@ -114,6 +125,7 @@ public class MapsActivity extends AppCompatActivity implements
                 }
                 mRoutesList.clear();
                 mLegsList.clear();
+                //mStepsList.clear();
                 getData(url);
                 setUpRecyclerView(mRecylcerView);
             }
@@ -316,9 +328,8 @@ public class MapsActivity extends AppCompatActivity implements
                                 stepStartLocationJSONObject = stepJSONObject.getJSONObject("start_location");
                                 stepStartLocationLatLng = new LatLng(stepStartLocationJSONObject.getDouble("lat"), stepStartLocationJSONObject.getDouble("lng"));
                                 step.setStartLocation(stepStartLocationLatLng);
-
                                 stepTravelMode = stepJSONObject.getString("travel_mode");
-
+                                step.setTravelMode(stepTravelMode);
 
                                 if (stepTravelMode == GoogleMapsConstants.MODES.TRANSIT &&
                                         stepJSONObject.has("transit_details")){
@@ -389,10 +400,9 @@ public class MapsActivity extends AppCompatActivity implements
 
                                     }
                                     cStep.addSteps(cStep);
-
                                 }
-
                                 leg.addStep(step);
+                                //mStepsList.add(step);
                             }
                             route.addLeg(leg);
                             mLegsList.add(leg);
@@ -453,5 +463,11 @@ public class MapsActivity extends AppCompatActivity implements
         return builder;
     }
 
-    // TODO: Modify Json parsing
+    @Override
+    public void onItemSelected(Routes route) {
+        Intent routeDetailsActivity = new Intent(this, RouteDetails.class)
+                .putExtra("route", route);
+        startActivity(routeDetailsActivity);
+    }
+
 }
