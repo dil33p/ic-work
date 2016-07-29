@@ -1,13 +1,14 @@
 package com.example.www.transit.model;
 
-import com.google.android.gms.maps.model.LatLng;
-
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by jaskaran on 26/7/16.
  */
-public class CustomSteps extends Steps {
+public class CustomSteps extends Steps implements Serializable{
+
+
     public List<CustomSteps> customStepsList;
 
     public List<CustomSteps> getCustomStepsList() {
@@ -23,12 +24,12 @@ public class CustomSteps extends Steps {
     }
 
     @Override
-    public List<LatLng> getPoints() {
+    public List<Location> getPoints() {
         return super.getPoints();
     }
 
     @Override
-    public void setPoints(List<LatLng> points) {
+    public void setPoints(List<Location> points) {
         super.setPoints(points);
     }
 
@@ -53,22 +54,22 @@ public class CustomSteps extends Steps {
     }
 
     @Override
-    public LatLng getEndLocation() {
+    public Location getEndLocation() {
         return super.getEndLocation();
     }
 
     @Override
-    public void setEndLocation(LatLng endLocation) {
+    public void setEndLocation(Location endLocation) {
         super.setEndLocation(endLocation);
     }
 
     @Override
-    public LatLng getStartLocation() {
+    public Location getStartLocation() {
         return super.getStartLocation();
     }
 
     @Override
-    public void setStartLocation(LatLng startLocation) {
+    public void setStartLocation(Location startLocation) {
         super.setStartLocation(startLocation);
     }
 

@@ -1,9 +1,11 @@
 package com.example.www.transit.model;
 
+import java.io.Serializable;
+
 /**
  * Created by jaskaran on 23/7/16.
  */
-public class Ctime {
+public class Ctime implements Serializable{
     public String text;
     public String timeZone;
     public long value;

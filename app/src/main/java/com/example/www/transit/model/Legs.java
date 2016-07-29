@@ -2,13 +2,14 @@ package com.example.www.transit.model;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by jaskaran on 20/7/16.
  */
-public class Legs {
+public class Legs implements Serializable{
 
     public Distance distance;
     public Duration duration;

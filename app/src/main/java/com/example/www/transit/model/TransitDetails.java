@@ -1,9 +1,11 @@
 package com.example.www.transit.model;
 
+import java.io.Serializable;
+
 /**
  * Created by jaskaran on 23/7/16.
  */
-public class TransitDetails {
+public class TransitDetails implements Serializable{
 
     public Stops arrivalStop;
     public Ctime arrivalTime;

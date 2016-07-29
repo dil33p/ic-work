@@ -1,9 +1,11 @@
 package com.example.www.transit.model;
 
+import java.io.Serializable;
+
 /**
  * Created by jaskaran on 20/7/16.
  */
-public class Location {
+public class Location implements Serializable {
 
     public Location(double lat, double lng) {
         this.lat = lat;

@@ -1,9 +1,11 @@
 package com.example.www.transit.model;
 
+import java.io.Serializable;
+
 /**
  * Created by jaskaran on 20/7/16.
  */
-public class Distance {
+public class Distance implements Serializable{
     private String text;
     private long value;
 

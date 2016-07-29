@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.www.transit.R;
 import com.example.www.transit.model.Legs;
 import com.example.www.transit.model.Routes;
@@ -31,10 +32,11 @@ public class RoutesAdapter extends RecyclerView.Adapter<RoutesAdapter.ViewHolder
     private OnAdapterItemSelectedListener mAdapterCallback;
 
     //private List<Steps> mStepsList = new ArrayList<>();
-    public RoutesAdapter(List<Routes> routesList, List<Legs> legsList, Context context){
+    public RoutesAdapter(List<Routes> routesList, List<Legs> legsList, Context context, OnAdapterItemSelectedListener adapterItemSelectedListener){
         this.mRoutesList = routesList;
         this.mLegsList = legsList;
         this.mContext = context;
+        this.mAdapterCallback = (adapterItemSelectedListener);
         //this.mStepsList = stepsList;
     }
 
@@ -63,9 +65,9 @@ public class RoutesAdapter extends RecyclerView.Adapter<RoutesAdapter.ViewHolder
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Routes route1 = mRoutesList.get(position);
+                //Routes route1 = mRoutesList.get(position);
                 if (mAdapterCallback != null){
-                    mAdapterCallback.onItemSelected(route1);
+                    mAdapterCallback.onItemSelected(route);
                 }
             }
         });
@@ -78,17 +80,18 @@ public class RoutesAdapter extends RecyclerView.Adapter<RoutesAdapter.ViewHolder
             Log.i(TAG, step.getTravelMode().toString() + position);
             /* mode += step.getTravelMode().toString() + " " + " > " + " " ;
             holder.travelMode.setText(mode);*/
-            mode = step.getTravelMode();
+            mode = step.getTravelMode().toString();
             holder.imageView = new ImageView(mContext);
 
             holder.imageView.setLayoutParams(vp);
             holder.imageView.setMaxHeight(50);
             holder.imageView.setMaxWidth(50);
-            holder.imageView.setImageResource(Utils.getIconResource(mode));
-            /*Glide.with(mContext)
-                    .load(Utils.getIconResource(mode))
+            //holder.imageView.setImageResource(Utils.getIconResource(mode));
+            Glide.with(mContext)
+                    .load("")
+                    .placeholder(Utils.getIconResource(mode))
                     .centerCrop()
-                    .into(imageView);*//**/
+                    .into(holder.imageView);
             ll.addView(holder.imageView);
 
         }

@@ -1,9 +1,11 @@
 package com.example.www.transit.model;
 
+import java.io.Serializable;
+
 /**
  * Created by jaskaran on 23/7/16.
  */
-public class Vehicle {
+public class Vehicle implements Serializable{
     public String icon;
     public String name;
     public String type;

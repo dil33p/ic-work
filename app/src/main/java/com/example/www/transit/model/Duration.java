@@ -1,9 +1,11 @@
 package com.example.www.transit.model;
 
+import java.io.Serializable;
+
 /**
  * Created by jaskaran on 20/7/16.
  */
-public class Duration {
+public class Duration implements Serializable{
     public Duration(String text, long value) {
         this.text = text;
         this.value = value;

@@ -1,4 +1,4 @@
-package com.example.www.transit;
+package com.example.www.transit.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +22,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.www.transit.R;
 import com.example.www.transit.adapters.PlaceAutoCompleteAdapter;
 import com.example.www.transit.adapters.RoutesAdapter;
 import com.example.www.transit.model.Ctime;
@@ -47,7 +48,6 @@ import com.google.android.gms.location.places.AutocompletePrediction;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBuffer;
 import com.google.android.gms.location.places.Places;
-import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -95,7 +95,7 @@ public class MapsActivity extends AppCompatActivity implements
         mRequestQueue = Volley.newRequestQueue(this);
 
         mRecylcerView = (RecyclerView) findViewById(R.id.card_list);
-        mRecyclerAdapter = new RoutesAdapter(mRoutesList, mLegsList, context);
+        mRecyclerAdapter = new RoutesAdapter(mRoutesList, mLegsList, context, this);
         mLinearLayoutManager = new LinearLayoutManager(this);
 
         //url = "https://maps.googleapis.com/maps/api/directions/json?origin=Mathikere,Bengaluru,Karnataka560054&destination=ElectronicCity,Phase1,BusStop,HewlettPackardAvenue,KonappanaAgrahara,ElectronicCity,Bengaluru,Karnataka560100&mode=driving&alternatives=true&key=" + GoogleMapsConstants.API_KEY;
@@ -256,6 +256,7 @@ public class MapsActivity extends AppCompatActivity implements
         JsonObjectRequest getListData = new JsonObjectRequest(Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                Log.d(TAG, response.toString());
 
                 try {
                     JSONArray routesArray = response.getJSONArray("routes");
@@ -269,6 +270,8 @@ public class MapsActivity extends AppCompatActivity implements
                         JSONObject legJSONObject;
                         Legs leg;
                         JSONArray stepsJSONArray;
+
+                        List<CustomSteps> customStepsList = new ArrayList<CustomSteps>();
                         for (int j=0; j< legsJSONArray.length(); j++){
                             leg = new Legs();
                             legJSONObject = legsJSONArray.getJSONObject(j);
@@ -304,7 +307,7 @@ public class MapsActivity extends AppCompatActivity implements
                             Steps step;
                             TransitSteps tStep;
                             String encodedString;
-                            LatLng stepStartLocationLatLng, stepEndLocationLatLng;
+                            Location stepStartLocationLatLng, stepEndLocationLatLng;
 
                             CustomSteps cStep;
                             JSONArray cStepJsonArray;
@@ -319,20 +322,19 @@ public class MapsActivity extends AppCompatActivity implements
                                 stepDurationJSONObject = stepJSONObject.getJSONObject("duration");
                                 step.setDuration(new Duration(stepDurationJSONObject.getString("text"), stepDurationJSONObject.getLong("value")));
                                 stepEndLocationJSONObject = stepJSONObject.getJSONObject("end_location");
-                                stepEndLocationLatLng = new LatLng(stepEndLocationJSONObject.getDouble("lat"), stepEndLocationJSONObject.getDouble("lng"));
+                                stepEndLocationLatLng = new Location(stepEndLocationJSONObject.getDouble("lat"), stepEndLocationJSONObject.getDouble("lng"));
                                 step.setEndLocation(stepEndLocationLatLng);
                                 step.setHtmlInstructions(stepJSONObject.getString("html_instructions"));
                                 legPolyLineJSONObject = stepJSONObject.getJSONObject("polyline");
                                 encodedString = legPolyLineJSONObject.getString("points");
                                 step.setPoints(Utils.decodePolyLines(encodedString));
                                 stepStartLocationJSONObject = stepJSONObject.getJSONObject("start_location");
-                                stepStartLocationLatLng = new LatLng(stepStartLocationJSONObject.getDouble("lat"), stepStartLocationJSONObject.getDouble("lng"));
+                                stepStartLocationLatLng = new Location(stepStartLocationJSONObject.getDouble("lat"), stepStartLocationJSONObject.getDouble("lng"));
                                 step.setStartLocation(stepStartLocationLatLng);
                                 stepTravelMode = stepJSONObject.getString("travel_mode");
                                 step.setTravelMode(stepTravelMode);
 
-                                if (stepTravelMode == GoogleMapsConstants.MODES.TRANSIT &&
-                                        stepJSONObject.has("transit_details")){
+                                if (step.getTravelMode().equals("TRANSIT")){
                                     tStep = new TransitSteps();
                                     stepTransitDetails = stepJSONObject.getJSONObject("transit_details");
 
@@ -342,7 +344,7 @@ public class MapsActivity extends AppCompatActivity implements
 
                                     arrivalStop = new Stops(arrivalStopLoc, transitArrivalStopJsonObject.getString("name"));
 
-                                    arrivalTimeJsonObject = stepTransitDetails.getJSONObject("arrivalTime");
+                                    arrivalTimeJsonObject = stepTransitDetails.getJSONObject("arrival_time");
                                     arrivalTime = new Ctime(arrivalTimeJsonObject.getString("text"), arrivalTimeJsonObject.getString("time_zone"), arrivalTimeJsonObject.getLong("value"));
 
                                     transitDepartureStopJsonObject = stepTransitDetails.getJSONObject("departure_stop");
@@ -357,17 +359,17 @@ public class MapsActivity extends AppCompatActivity implements
                                     headsign = stepTransitDetails.getString("headsign");
 
                                     lineJsonObject = stepTransitDetails.getJSONObject("line");
-                                    vehicleJsonObject = stepTransitDetails.getJSONObject("vehicle");
+                                    vehicleJsonObject = lineJsonObject.getJSONObject("vehicle");
                                     vehicle = new Vehicle(vehicleJsonObject.getString("icon"), vehicleJsonObject.getString("name"), vehicleJsonObject.getString("type"));
 
                                     line = new Line(lineJsonObject.getString("name"), vehicle);
                                     numStops = stepTransitDetails.getInt("num_stops");
                                     transitDetail = new TransitDetails(arrivalStop, arrivalTime, departureStop, departureTime, headsign, line, numStops);
                                     tStep.setTransitDetails(transitDetail);
+                                    step.setTransitSteps(tStep);
                                 }
 
-                                else if (stepTravelMode == GoogleMapsConstants.MODES.WALKING &&
-                                        stepJSONObject.has("steps")){
+                                else if (step.getTravelMode().equals("WALKING")){
                                     cStep = new CustomSteps();
                                     cStepJsonArray = stepJSONObject.getJSONArray("steps");
                                     for (int x=0; x<cStepJsonArray.length(); x++){
@@ -380,26 +382,33 @@ public class MapsActivity extends AppCompatActivity implements
                                         Duration cDuration = new Duration(cDurationJsonObject.getString("text"), cDurationJsonObject.getLong("value"));
 
                                         JSONObject cEndLocationJsonObject = cStepJsonObject.getJSONObject("end_location");
-                                        LatLng cEndLocation = new LatLng(cEndLocationJsonObject.getLong("lat"), cEndLocationJsonObject.getLong("lng"));
+                                        Location cEndLocation = new Location(cEndLocationJsonObject.getLong("lat"), cEndLocationJsonObject.getLong("lng"));
 
-                                        String htmlInstructions = cStepJsonObject.getString("html_instructions");
+
 
                                         JSONObject cPolylinesJsonObject = cStepJsonObject.getJSONObject("polyline");
                                         String codedString = cPolylinesJsonObject.getString("points");
 
                                         JSONObject cStartLocationJsonObject = cStepJsonObject.getJSONObject("start_location");
-                                        LatLng cStartLocation = new LatLng(cStartLocationJsonObject.getLong("lat"), cStartLocationJsonObject.getLong("lng"));
+                                        Location cStartLocation = new Location(cStartLocationJsonObject.getLong("lat"), cStartLocationJsonObject.getLong("lng"));
 
                                         cStep.setDistance(cDistance);
                                         cStep.setDuration(cDuration);
                                         cStep.setEndLocation(cEndLocation);
-                                        cStep.setHtmlInstructions(htmlInstructions);
+                                        //cStep.setHtmlInstructions(htmlInstructions);
                                         cStep.setPoints(Utils.decodePolyLines(codedString));
                                         cStep.setStartLocation(cStartLocation);
                                         cStep.setTravelMode(cStepJsonObject.getString("travel_mode"));
 
+                                        if (cStepJsonObject.has("html_instructions")) {
+                                            String htmlInstructions = cStepJsonObject.getString("html_instructions");
+                                            cStep.setHtmlInstructions(htmlInstructions);
+                                        }
+
+                                        customStepsList.add(cStep);
+                                        //step.addCustomSteps(cStep);
                                     }
-                                    cStep.addSteps(cStep);
+                                    step.setCustomSteps(customStepsList);
                                 }
                                 leg.addStep(step);
                                 //mStepsList.add(step);
@@ -465,8 +474,10 @@ public class MapsActivity extends AppCompatActivity implements
 
     @Override
     public void onItemSelected(Routes route) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("route", route);
         Intent routeDetailsActivity = new Intent(this, RouteDetails.class)
-                .putExtra("route", route);
+                .putExtras(bundle);
         startActivity(routeDetailsActivity);
     }
 

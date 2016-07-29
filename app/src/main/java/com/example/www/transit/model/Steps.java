@@ -1,27 +1,40 @@
 package com.example.www.transit.model;
 
-import com.google.android.gms.maps.model.LatLng;
-
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by jaskaran on 20/7/16.
  */
-public class Steps {
+public class Steps implements Serializable{
 
     public Distance distance;
     public Duration duration;
-    public LatLng endLocation;
-    public LatLng startLocation;
+    public Location endLocation;
+    public Location startLocation;
     public String htmlInstructions;
     public String travelMode;
-    public List<LatLng> points;
+    public List<Location> points;
+    public TransitSteps transitSteps;
+    public List<CustomSteps> customSteps;
 
-    public List<LatLng> getPoints() {
+    /*private void writeObject(ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject();
+        out.writeDouble(mLocation.latitude);
+        out.writeDouble(mLocation.longitude);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        mLocation = new LatLng(in.readDouble(), in.readDouble());
+    }*/
+
+
+    public List<Location> getPoints() {
         return points;
     }
 
-    public void setPoints(List<LatLng> points) {
+    public void setPoints(List<Location> points) {
         this.points = points;
     }
 
@@ -41,19 +54,19 @@ public class Steps {
         this.duration = duration;
     }
 
-    public LatLng getEndLocation() {
+    public Location getEndLocation() {
         return endLocation;
     }
 
-    public void setEndLocation(LatLng endLocation) {
+    public void setEndLocation(Location endLocation) {
         this.endLocation = endLocation;
     }
 
-    public LatLng getStartLocation() {
+    public Location getStartLocation() {
         return startLocation;
     }
 
-    public void setStartLocation(LatLng startLocation) {
+    public void setStartLocation(Location startLocation) {
         this.startLocation = startLocation;
     }
 
@@ -71,5 +84,33 @@ public class Steps {
 
     public void setTravelMode(String travelMode) {
         this.travelMode = travelMode;
+    }
+
+    public TransitSteps getTransitSteps() {
+        return transitSteps;
+    }
+
+    public void setTransitSteps(TransitSteps transitSteps) {
+        this.transitSteps = transitSteps;
+    }
+
+    /*public CustomSteps getCustomSteps() {
+        return customSteps;
+    }
+
+    public void setCustomSteps(CustomSteps customSteps) {
+        this.customSteps = customSteps;
+    }*/
+
+    public void setCustomSteps(List<CustomSteps> customSteps) {
+        this.customSteps = customSteps;
+    }
+
+    public List<CustomSteps> getCustomSteps() {
+        return customSteps;
+    }
+
+    public void addCustomSteps(CustomSteps customSteps){
+        this.customSteps.add(customSteps);
     }
 }

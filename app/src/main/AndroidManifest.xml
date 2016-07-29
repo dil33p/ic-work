@@ -34,7 +34,7 @@
             android:value="@integer/google_play_services_version"/>
 
         <activity
-            android:name=".MapsActivity"
+            android:name=".ui.MapsActivity"
             android:label="@string/title_activity_maps">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -42,7 +42,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="RouteDetails"></activity>
+        <activity android:name=".ui.RouteDetails"></activity>
     </application>
 
 </manifest>
