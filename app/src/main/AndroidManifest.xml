@@ -42,7 +42,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.RouteDetails"></activity>
+        <activity android:name=".ui.RouteDetails">
+
+        </activity>
+        <activity android:name=".ui.MapView"></activity>
     </application>
 
 </manifest>

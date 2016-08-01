@@ -1,9 +1,11 @@
 package com.example.www.transit.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -35,6 +37,7 @@ public class RouteDetails extends AppCompatActivity {
     private TextView stepHtmlInstruction;
 
     private TextView journeyTime, totalDistance, sourceAddress, departureTime;
+    private ImageView mapsView;
     //private TextView transitArrivalStop, transitDepartureStop, transitArrivalTime, transitDepartureTime, vehicleType, vehicleName, numStop;
 
 
@@ -49,11 +52,25 @@ public class RouteDetails extends AppCompatActivity {
         departureTime = (TextView) findViewById(R.id.departure_time);
 
         stepsLayout = (LinearLayout) findViewById(R.id.steps_layout);
+        mapsView = (ImageView) findViewById(R.id.map_view);
+
 
         LinearLayout.LayoutParams vp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        Routes route = (Routes)getIntent().getSerializableExtra("route");
+        final Routes route = (Routes)getIntent().getSerializableExtra("route");
 
         mLegsList = route.getLegs();
+
+        mapsView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("route", route);
+                Intent intent = new Intent(RouteDetails.this, MapView.class)
+                        .putExtras(bundle);
+                startActivity(intent);
+
+            }
+        });
         for (Legs leg : mLegsList){
             mStepsList = leg.getSteps();
             journeyTime.setText(leg.duration.getText());
@@ -123,7 +140,6 @@ public class RouteDetails extends AppCompatActivity {
                         for (CustomSteps cStep : customSteps){
                             if (cStep.htmlInstructions != null) {
                                 Log.i("Custom Steps", Utils.decodeInstructions(cStep.getHtmlInstructions()));
-
                             }
                             Log.i("Custom Steps", cStep.duration.getText());
                             Log.i("Custom Steps", cStep.distance.getText());

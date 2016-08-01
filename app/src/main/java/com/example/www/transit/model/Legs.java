@@ -1,7 +1,5 @@
 package com.example.www.transit.model;
 
-import com.google.android.gms.maps.model.LatLng;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +12,9 @@ public class Legs implements Serializable{
     public Distance distance;
     public Duration duration;
     public String endAddress;
-    public LatLng endLocation;
+    public Location endLocation;
     public String startAddress;
-    public LatLng startLocation;
+    public Location startLocation;
     public List<Steps> steps;
     public Ctime arrivalTime;
     public Ctime DepartureTime;
@@ -65,11 +63,11 @@ public class Legs implements Serializable{
         this.endAddress = endAddress;
     }
 
-    public LatLng getEndLocation() {
+    public Location getEndLocation() {
         return endLocation;
     }
 
-    public void setEndLocation(LatLng endLocation) {
+    public void setEndLocation(Location endLocation) {
         this.endLocation = endLocation;
     }
 
@@ -81,11 +79,11 @@ public class Legs implements Serializable{
         this.startAddress = startAddress;
     }
 
-    public LatLng getStartLocation() {
+    public Location getStartLocation() {
         return startLocation;
     }
 
-    public void setStartLocation(LatLng startLocation) {
+    public void setStartLocation(Location startLocation) {
         this.startLocation = startLocation;
     }
 
@@ -100,5 +98,6 @@ public class Legs implements Serializable{
     public void addStep(Steps step) {
         this.steps.add(step);
     }
+
 }
 

@@ -281,7 +281,8 @@ public class MapsActivity extends AppCompatActivity implements
                             leg.setDepartureTime(new Ctime(legJSONObject.optJSONObject("departure_time").optString("text"), legJSONObject.optJSONObject("departure_time").optString("time_zone"), legJSONObject.optJSONObject("departure_time").optLong("value")));
                             leg.setStartAddress(legJSONObject.getString("start_address"));
                             leg.setEndAddress(legJSONObject.getString("end_address"));
-
+                            leg.setStartLocation(new Location(legJSONObject.optJSONObject("start_location").optDouble("lat"), legJSONObject.optJSONObject("start_location").optDouble("lng")));
+                            leg.setEndLocation(new Location(legJSONObject.optJSONObject("end_location").optDouble("lat"), legJSONObject.optJSONObject("end_location").optDouble("lng")));
                             stepsJSONArray = legJSONObject.getJSONArray("steps");
                             JSONObject stepJSONObject, stepDurationJSONObject, legPolyLineJSONObject, stepStartLocationJSONObject, stepEndLocationJSONObject, stepTransitDetails;
 
