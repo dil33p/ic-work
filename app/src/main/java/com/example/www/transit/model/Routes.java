@@ -18,6 +18,15 @@ public class Routes implements Serializable{
     public List<Legs> legs;
     public Polyline overviewPolyLine;
     public String summary;
+    public String points;
+
+    public String getPoints() {
+        return points;
+    }
+
+    public void setPoints(String points) {
+        this.points = points;
+    }
 
     public Routes(Context context) {
         legs = new ArrayList<Legs>();

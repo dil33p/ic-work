@@ -266,12 +266,14 @@ public class MapsActivity extends AppCompatActivity implements
                         routesJSONObject = routesArray.getJSONObject(i);
                         JSONArray legsJSONArray;
                         route.setSummary(routesJSONObject.getString("summary"));
+                        String encodedPoints = routesJSONObject.getJSONObject("overview_polyline").getString("points");
+                        route.setPoints(encodedPoints);
                         legsJSONArray = routesJSONObject.getJSONArray("legs");
                         JSONObject legJSONObject;
                         Legs leg;
                         JSONArray stepsJSONArray;
-
                         List<CustomSteps> customStepsList = new ArrayList<CustomSteps>();
+
                         for (int j=0; j< legsJSONArray.length(); j++){
                             leg = new Legs();
                             legJSONObject = legsJSONArray.getJSONObject(j);
