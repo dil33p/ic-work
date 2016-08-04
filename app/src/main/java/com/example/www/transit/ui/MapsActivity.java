@@ -273,6 +273,7 @@ public class MapsActivity extends AppCompatActivity implements
                         Legs leg;
                         JSONArray stepsJSONArray;
                         List<CustomSteps> customStepsList = new ArrayList<CustomSteps>();
+                        String short_name;
 
                         for (int j=0; j< legsJSONArray.length(); j++){
                             leg = new Legs();
@@ -365,7 +366,13 @@ public class MapsActivity extends AppCompatActivity implements
                                     vehicleJsonObject = lineJsonObject.getJSONObject("vehicle");
                                     vehicle = new Vehicle(vehicleJsonObject.getString("icon"), vehicleJsonObject.getString("name"), vehicleJsonObject.getString("type"));
 
-                                    line = new Line(lineJsonObject.getString("name"), vehicle);
+                                    if (lineJsonObject.has("short_name")){
+                                        short_name = lineJsonObject.getString("short_name");
+                                    }else {
+                                        short_name = "null";
+                                    }
+
+                                    line = new Line(lineJsonObject.getString("name"), vehicle, short_name);
                                     numStops = stepTransitDetails.getInt("num_stops");
                                     transitDetail = new TransitDetails(arrivalStop, arrivalTime, departureStop, departureTime, headsign, line, numStops);
                                     tStep.setTransitDetails(transitDetail);

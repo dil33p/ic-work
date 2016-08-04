@@ -4,7 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.support.v7.widget.CardView;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -12,7 +13,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.www.transit.R;
-import com.example.www.transit.model.CustomSteps;
 import com.example.www.transit.model.Legs;
 import com.example.www.transit.model.Routes;
 import com.example.www.transit.model.Steps;
@@ -27,17 +27,22 @@ import java.util.List;
  * Created by jaskaran on 27/7/16.
  */
 public class RouteDetails extends AppCompatActivity {
-    // TODO: complete the activity
-    private List<Legs> mLegsList = new ArrayList<Legs>();
-    private List<Steps> mStepsList = new ArrayList<Steps>();
+    private List<Legs> mLegsList = new ArrayList<>();
+    private List<Steps> mStepsList = new ArrayList<>();
 
     private LinearLayout stepsLayout;
     private TextView stepDistance;
     private TextView stepDuration;
     private TextView stepHtmlInstruction;
 
-    private TextView journeyTime, totalDistance, sourceAddress, departureTime;
+    private TextView journeyDuration;
+    private CardView routeCard;
+
+    private LinearLayout parentLayout;
+
     private ImageView mapsView;
+    public ImageView vehicleImage, arrowRight, walkImage;
+    public TextView busName, walkDistance, arrivalTime, departureTime;
     //private TextView transitArrivalStop, transitDepartureStop, transitArrivalTime, transitDepartureTime, vehicleType, vehicleName, numStop;
 
 
@@ -46,19 +51,117 @@ public class RouteDetails extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.route_details);
 
-        journeyTime = (TextView) findViewById(R.id.journey_time);
-        totalDistance = (TextView) findViewById(R.id.total_distance);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+
+        routeCard = (CardView) findViewById(R.id.route_card);
+        journeyDuration = (TextView) findViewById(R.id.journey_time);
+        parentLayout = (LinearLayout) findViewById(R.id.parent);
+
+        /*totalDistance = (TextView) findViewById(R.id.total_distance);
         sourceAddress = (TextView) findViewById(R.id.from_address);
-        departureTime = (TextView) findViewById(R.id.departure_time);
+        departureTime = (TextView) findViewById(R.id.departure_time);*/
 
-        stepsLayout = (LinearLayout) findViewById(R.id.steps_layout);
+        //stepsLayout = (LinearLayout) findViewById(R.id.steps_layout);
         mapsView = (ImageView) findViewById(R.id.map_view);
-
-
-        LinearLayout.LayoutParams vp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        int lastView = 0;
+        long distance = 0;
+        LinearLayout.LayoutParams vp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         final Routes route = (Routes)getIntent().getSerializableExtra("route");
 
+        LinearLayout ll = new LinearLayout(this);
+        ll.setLayoutParams(lp);
+        ll.setOrientation(LinearLayout.HORIZONTAL);
+        ll.setPadding(4,4,4,4);
+
+        LinearLayout lw = new LinearLayout(this);
+        lw.setLayoutParams(lp);
+        lw.setOrientation(LinearLayout.HORIZONTAL);
+        lw.setPadding(4,4,4,4);
+
+        parentLayout.addView(ll);
+        parentLayout.addView(lw);
+
         mLegsList = route.getLegs();
+        for (Legs leg : mLegsList){
+            journeyDuration.setText(leg.duration.getText());
+            mStepsList = leg.getSteps();
+            for (Steps step : mStepsList){
+                String mode = step.getTravelMode();
+                if (mode.equals("TRANSIT")){
+                    lastView++;
+                    TransitSteps transitSteps = step.getTransitSteps();
+                    TransitDetails transitDetails = transitSteps.getTransitDetails();
+                    vehicleImage = new ImageView(this);
+                    arrowRight = new ImageView(this);
+                    arrowRight.setLayoutParams(vp);
+                    arrowRight.setMaxHeight(50);
+                    arrowRight.setMaxWidth(50);
+                    arrowRight.setId(lastView);
+                    busName = new TextView(this);
+                    busName.setLayoutParams(vp);
+                    vehicleImage.setLayoutParams(vp);
+                    vehicleImage.setMaxHeight(50);
+                    vehicleImage.setMaxWidth(50);
+                    Glide.with(this)
+                            .load("http:"+transitDetails.line.vehicle.icon)
+                            .centerCrop()
+                            .override(50,50)
+                            .into(vehicleImage);
+                    String name = transitDetails.line.name;
+                    String shortName = transitDetails.line.short_name;
+                    if (shortName.equals("null")){
+                        busName.setText(name);
+                    }else {
+                        busName.setText(shortName);
+                    }
+                    Glide.with(this)
+                            .load("")
+                            .placeholder(R.drawable.ic_hardware_keyboard_arrow_right)
+                            .centerCrop()
+                            .into(arrowRight);
+                    ll.addView(vehicleImage);
+                    ll.addView(busName);
+                    ll.addView(arrowRight);
+                }
+                if (mode.equals("WALKING")){
+                    distance += step.distance.value;
+
+                }
+            }
+
+            walkDistance = new TextView(this);
+            walkDistance.setLayoutParams(vp);
+            walkDistance.setGravity(Gravity.END);
+
+            walkDistance.setText(Utils.convertDistance(distance));
+
+            walkImage = new ImageView(this);
+            walkImage.setMaxHeight(50);
+            walkImage.setMaxWidth(50);
+            walkImage.setLayoutParams(vp);
+
+            Glide.with(this)
+                    .load("")
+                    .centerCrop()
+                    .placeholder(R.drawable.ic_maps_directions_walk)
+                    .into(walkImage);
+
+            departureTime = new TextView(this);
+            departureTime.setLayoutParams(vp);
+            departureTime.setText(leg.DepartureTime.text + " to ");
+
+            arrivalTime = new TextView(this);
+            arrivalTime.setLayoutParams(vp);
+            arrivalTime.setText(leg.arrivalTime.text);
+
+            lw.addView(departureTime);
+            lw.addView(arrivalTime);
+            lw.addView(walkImage);
+            lw.addView(walkDistance);
+
+            ImageView lastArrow = (ImageView) ll.findViewById(lastView);
+            lastArrow.setVisibility(View.GONE);
+        }
 
         mapsView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,12 +174,12 @@ public class RouteDetails extends AppCompatActivity {
 
             }
         });
-        for (Legs leg : mLegsList){
+        /*for (Legs leg : mLegsList){
             mStepsList = leg.getSteps();
             journeyTime.setText(leg.duration.getText());
-            totalDistance.setText(leg.distance.getText());
+            *//*totalDistance.setText(leg.distance.getText());
             sourceAddress.setText(leg.getStartAddress());
-            departureTime.setText(leg.DepartureTime.getText());
+            departureTime.setText(leg.DepartureTime.getText());*//*
 
             for (Steps step : mStepsList){
                 LinearLayout ll = new LinearLayout(this);
@@ -123,8 +226,8 @@ public class RouteDetails extends AppCompatActivity {
                         vehicleName.setText("Name " + transitDetails.line.getName());
                         numStop.setText("Stops " + String.valueOf(numStpos));
 
-                        /*if (transitArrivalStop.getParent() != null)
-                            ((ViewGroup)transitArrivalStop.getParent()).removeView(transitArrivalStop);*/
+                        *//*if (transitArrivalStop.getParent() != null)
+                            ((ViewGroup)transitArrivalStop.getParent()).removeView(transitArrivalStop);*//*
 
                         ll.addView(transitArrivalStop);
                         ll.addView(transitArrivalTime);
@@ -167,6 +270,6 @@ public class RouteDetails extends AppCompatActivity {
                 stepsLayout.addView(ll);
             }
 
-        }
+        }*/
     }
 }

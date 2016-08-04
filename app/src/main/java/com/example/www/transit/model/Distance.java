@@ -6,8 +6,8 @@ import java.io.Serializable;
  * Created by jaskaran on 20/7/16.
  */
 public class Distance implements Serializable{
-    private String text;
-    private long value;
+    public String text;
+    public long value;
 
     public Distance(String text, long value) {
         this.text = text;

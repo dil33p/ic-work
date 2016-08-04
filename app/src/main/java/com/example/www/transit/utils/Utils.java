@@ -49,26 +49,14 @@ public class Utils {
         return decoded;
     }
 
-    public static int toKms(String distance){
-        int a = Integer.parseInt(distance);
-        return a/1000;
-    }
-
     public static int getIconResource(String mode){
-        /*if (mode == "TRANSIT"){
-            return R.drawable.ic_directions_transit_black_24dp;
-        } else if (mode == "WALKING"){
-            return R.drawable.ic_directions_walk_black_24dp;
-        }
-        //return -1;
-        return R.drawable.ic_directions_walk_black_24dp;*/
         int image;
         switch (mode){
             case "TRANSIT":
                 image = R.drawable.ic_directions_transit_black_24dp;
                 break;
             case "WALKING":
-                image = R.drawable.ic_directions_walk_black_24dp;
+                image = R.drawable.ic_maps_directions_walk;
                 break;
             default:
                 image = -1;
@@ -88,5 +76,17 @@ public class Utils {
         }
         return string;
     }
+
+    public static String convertDistance(long value){
+        String distance;
+        if (value > 1000){
+            double dis = (double) value/1000;
+            distance = String.format("%.1f", dis) + " Kms";
+        }else {
+            distance = String.valueOf(value) + " mts";
+        }
+        return distance;
+    }
+
 
 }
