@@ -1,10 +1,14 @@
 package com.example.www.transit.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
@@ -13,6 +17,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.www.transit.R;
+import com.example.www.transit.adapters.StepsAdapter;
 import com.example.www.transit.model.Legs;
 import com.example.www.transit.model.Routes;
 import com.example.www.transit.model.Steps;
@@ -27,13 +32,21 @@ import java.util.List;
  * Created by jaskaran on 27/7/16.
  */
 public class RouteDetails extends AppCompatActivity {
+    //private List<Routes> mRoutesList = new ArrayList<>();
     private List<Legs> mLegsList = new ArrayList<>();
     private List<Steps> mStepsList = new ArrayList<>();
 
-    private LinearLayout stepsLayout;
+    /*private LinearLayout stepsLayout;
     private TextView stepDistance;
     private TextView stepDuration;
-    private TextView stepHtmlInstruction;
+    private TextView stepHtmlInstruction;*/
+
+    /*Recycler Adapter variables*/
+    private RecyclerView mRecylerView;
+    private RecyclerView.Adapter mRecyclerAdapter;
+    private LinearLayoutManager mLinearLayoutManager;
+    private Context mContext;
+
 
     private TextView journeyDuration;
     private CardView routeCard;
@@ -56,12 +69,10 @@ public class RouteDetails extends AppCompatActivity {
         routeCard = (CardView) findViewById(R.id.route_card);
         journeyDuration = (TextView) findViewById(R.id.journey_time);
         parentLayout = (LinearLayout) findViewById(R.id.parent);
+        mContext = this;
+        mRecylerView = (RecyclerView) findViewById(R.id.steps_list);
 
-        /*totalDistance = (TextView) findViewById(R.id.total_distance);
-        sourceAddress = (TextView) findViewById(R.id.from_address);
-        departureTime = (TextView) findViewById(R.id.departure_time);*/
 
-        //stepsLayout = (LinearLayout) findViewById(R.id.steps_layout);
         mapsView = (ImageView) findViewById(R.id.map_view);
         int lastView = 0;
         long distance = 0;
@@ -82,6 +93,15 @@ public class RouteDetails extends AppCompatActivity {
         parentLayout.addView(lw);
 
         mLegsList = route.getLegs();
+        for (Legs leg : mLegsList){
+            mStepsList = leg.getSteps();
+
+        }
+        mRecyclerAdapter = new StepsAdapter(mStepsList, mContext);
+        mRecyclerAdapter.notifyDataSetChanged();
+
+        mLinearLayoutManager = new LinearLayoutManager(this);
+
         for (Legs leg : mLegsList){
             journeyDuration.setText(leg.duration.getText());
             mStepsList = leg.getSteps();
@@ -162,6 +182,10 @@ public class RouteDetails extends AppCompatActivity {
             ImageView lastArrow = (ImageView) ll.findViewById(lastView);
             lastArrow.setVisibility(View.GONE);
         }
+
+
+
+        setUpRecyclerView(mRecylerView);
 
         mapsView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -271,5 +295,12 @@ public class RouteDetails extends AppCompatActivity {
             }
 
         }*/
+    }
+
+    private void setUpRecyclerView(RecyclerView recyclerView){
+        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
+        recyclerView.setLayoutManager(mLinearLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(mRecyclerAdapter);
     }
 }

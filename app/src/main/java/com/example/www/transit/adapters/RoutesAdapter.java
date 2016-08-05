@@ -54,6 +54,11 @@ public class RoutesAdapter extends RecyclerView.Adapter<RoutesAdapter.ViewHolder
     }
 
     @Override
+    public long getItemId(int position) {
+        return super.getItemId(position);
+    }
+
+    @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         final Routes route = mRoutesList.get(position);
         final Legs leg = mLegsList.get(position);
@@ -146,10 +151,6 @@ public class RoutesAdapter extends RecyclerView.Adapter<RoutesAdapter.ViewHolder
 
             if (mode.equals("WALKING")){
                 distance += step.distance.value;
-                System.out.println(distance);
-                /*holder.walkDistance = new TextView(mContext);
-                holder.walkDistance.setLayoutParams(vp);
-                holder.walkDistance.setGravity(Gravity.END);*/
             }
 
         }

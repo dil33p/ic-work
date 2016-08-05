@@ -43,7 +43,6 @@
 
             </LinearLayout>
 
-
         </android.support.v7.widget.Toolbar>
 
 
@@ -53,7 +52,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        >
 
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
@@ -61,13 +61,14 @@
             app:elevation="6dp"
             android:id="@+id/route_card"
             tools:cardCornerRadius="3dp"
-            android:padding="4dp">
+            >
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:id="@+id/parent">
+                android:id="@+id/parent"
+                android:padding="8dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -79,59 +80,20 @@
 
         </android.support.v7.widget.CardView>
 
+        <!--<LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="4dp">-->
+
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="vertical"
+                android:id="@+id/steps_list"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
     </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="4dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_weight="2"
-                android:layout_height="wrap_content"
-                android:id="@+id/from_address"
-                android:gravity="start"/>
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:id="@+id/departure_time"
-                android:gravity="end"/>
-
-        </LinearLayout>
-
-        <!-- Steps Layout-->
-
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:id="@+id/steps_layout"
-                android:padding="4dp">
-
-
-
-                <!--<TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/step_distance"
-                    android:gravity="start"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/step_duration"
-                    android:gravity="start"/>-->
-
-            </LinearLayout>
-
-        </ScrollView>
 
 </android.support.design.widget.CoordinatorLayout>
