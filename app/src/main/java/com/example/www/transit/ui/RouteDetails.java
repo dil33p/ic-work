@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.www.transit.DividerItemDecoration;
 import com.example.www.transit.R;
 import com.example.www.transit.adapters.StepsAdapter;
 import com.example.www.transit.model.Legs;
@@ -71,7 +72,10 @@ public class RouteDetails extends AppCompatActivity {
         parentLayout = (LinearLayout) findViewById(R.id.parent);
         mContext = this;
         mRecylerView = (RecyclerView) findViewById(R.id.steps_list);
-
+        mRecylerView.addItemDecoration(new DividerItemDecoration(
+                mContext,
+                R.drawable.divider
+        ));
 
         mapsView = (ImageView) findViewById(R.id.map_view);
         int lastView = 0;

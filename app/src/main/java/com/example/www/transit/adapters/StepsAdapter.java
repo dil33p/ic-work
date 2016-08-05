@@ -122,4 +122,6 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.ViewHolder> 
             stepsLayout = (LinearLayout) view.findViewById(R.id.step_dynamic_layout);
         }
     }
+
+
 }
