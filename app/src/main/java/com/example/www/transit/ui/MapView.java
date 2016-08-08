@@ -10,7 +10,7 @@ import com.example.www.transit.R;
 import com.example.www.transit.model.Legs;
 import com.example.www.transit.model.Location;
 import com.example.www.transit.model.Routes;
-import com.example.www.transit.utils.Utils;
+import com.example.www.transit.model.Steps;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -31,10 +31,13 @@ public class MapView extends AppCompatActivity implements OnMapReadyCallback {
     GoogleMap mGoogleMap;
     private MarkerOptions origin;
     private MarkerOptions destination;
-    private List<Location> polylinePaths = new ArrayList<>();
-    private List<LatLng> polyPoints = new ArrayList<>();
+    private List<Location> polylinePathsTransit = new ArrayList<>();
+    private List<Location> polylinePathsWalking = new ArrayList<>();
+    private List<LatLng> polyPointsTransit = new ArrayList<>();
+    private List<LatLng> polylinePointsWalking = new ArrayList<>();
+    private List<Steps> mStepsList = new ArrayList<>();
     private LatLng cameraLatLng;
-    PolylineOptions polylineOptions;
+    PolylineOptions polylineOptionsTransit, polylineOptionsWalking;
     //boolean mReady = true;
 
     @Override
@@ -48,6 +51,7 @@ public class MapView extends AppCompatActivity implements OnMapReadyCallback {
         final Routes route = (Routes)getIntent().getSerializableExtra("route");
 
         mLegsList = route.getLegs();
+        String mode;
         for (Legs leg : mLegsList){
 
             final LatLng a = new LatLng(leg.startLocation.lat, leg.startLocation.lng);
@@ -64,7 +68,56 @@ public class MapView extends AppCompatActivity implements OnMapReadyCallback {
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place_black_24dp));
             Log.i("End Location", "Lat:" + String.valueOf(leg.endLocation.lat) + "LNG:" + String.valueOf(leg.endLocation.lng));
 
-            polylinePaths = Utils.decodePolyLines(route.getPoints());
+            mStepsList = leg.getSteps();
+            for (Steps step : mStepsList){
+                mode = step.getTravelMode();
+                polylinePathsTransit = step.getPoints();
+                for (Location loc : polylinePathsTransit){
+                    final LatLng latLng = new LatLng(loc.lat, loc.lng);
+                    polyPointsTransit.add(latLng);
+                }
+                polylineOptionsTransit = new PolylineOptions()
+                        .geodesic(true)
+                        .color(getLineColor(mode))
+                        .width(15);
+                for (int i=0; i<polyPointsTransit.size(); i++){
+                    polylineOptionsTransit.add(polyPointsTransit.get(i));
+                }
+
+            }
+            /*for (Steps step : mStepsList){
+                mode = step.getTravelMode();
+                if (mode.equals("TRANSIT")){
+                    polylinePathsTransit = step.getPoints();
+                    for (Location location : polylinePathsTransit){
+                        final LatLng latLngPointTransit = new LatLng(location.lat, location.lng);
+                        polyPointsTransit.add(latLngPointTransit);
+                    }
+                    polylineOptionsTransit = new PolylineOptions()
+                            .geodesic(true)
+                            .color(Color.GREEN)
+                            .width(15);
+                    for (int i=0; i<polyPointsTransit.size(); i++){
+                        polylineOptionsTransit.add(polyPointsTransit.get(i));
+                    }
+                }
+
+                if (mode.equals("WALKING")){
+                    polylinePathsWalking = step.getPoints();
+                    for (Location location : polylinePathsWalking){
+                        final LatLng latlngPointsWalking = new LatLng(location.lat, location.lng);
+                        polylinePointsWalking.add(latlngPointsWalking);
+                    }
+                    polylineOptionsWalking = new PolylineOptions()
+                            .geodesic(true)
+                            .color(Color.BLUE)
+                            .width(15);
+                    for (int i=0; i<polylinePointsWalking.size(); i++){
+                        polylineOptionsWalking.add(polylinePointsWalking.get(i));
+                    }
+                }
+            }*/
+            /*polylinePaths = Utils.decodePolyLines(route.getPoints());
             for (Location location : polylinePaths){
                 final LatLng latLngPoints = new LatLng(location.lat, location.lng);
                 polyPoints.add(latLngPoints);
@@ -75,8 +128,21 @@ public class MapView extends AppCompatActivity implements OnMapReadyCallback {
                     .width(10);
             for (int i=0; i<polyPoints.size(); i++){
                 polylineOptions.add(polyPoints.get(i));
-            }
+            }*/
+
+
         }
+    }
+
+    private int getLineColor(String mode){
+        int color = -1;
+        if (mode.equals("TRANSIT")){
+            color = Color.CYAN;
+        }
+        else if (mode.equals("WALKING")){
+            color = Color.GREEN;
+        }
+        return color;
     }
 
 
@@ -91,7 +157,8 @@ public class MapView extends AppCompatActivity implements OnMapReadyCallback {
         );
         mGoogleMap.addMarker(origin);
         mGoogleMap.addMarker(destination);
-        mGoogleMap.addPolyline(polylineOptions);
+        mGoogleMap.addPolyline(polylineOptionsTransit);
+        //mGoogleMap.addPolyline(polylineOptionsWalking);
 
     }
 }

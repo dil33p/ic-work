@@ -331,7 +331,7 @@ public class MapsActivity extends AppCompatActivity implements
                                 step.setHtmlInstructions(stepJSONObject.getString("html_instructions"));
                                 legPolyLineJSONObject = stepJSONObject.getJSONObject("polyline");
                                 encodedString = legPolyLineJSONObject.getString("points");
-                                step.setPoints(Utils.decodePolyLines(encodedString));
+                                //step.setPoints(Utils.decodePolyLines(encodedString));
                                 stepStartLocationJSONObject = stepJSONObject.getJSONObject("start_location");
                                 stepStartLocationLatLng = new Location(stepStartLocationJSONObject.getDouble("lat"), stepStartLocationJSONObject.getDouble("lng"));
                                 step.setStartLocation(stepStartLocationLatLng);
@@ -339,6 +339,7 @@ public class MapsActivity extends AppCompatActivity implements
                                 step.setTravelMode(stepTravelMode);
 
                                 if (step.getTravelMode().equals("TRANSIT")){
+                                    step.setPoints(Utils.decodePolyLines(encodedString));
                                     tStep = new TransitSteps();
                                     stepTransitDetails = stepJSONObject.getJSONObject("transit_details");
 
@@ -380,6 +381,7 @@ public class MapsActivity extends AppCompatActivity implements
                                 }
 
                                 else if (step.getTravelMode().equals("WALKING")){
+                                    step.setPoints(Utils.decodePolyLines(encodedString));
                                     cStep = new CustomSteps();
                                     cStepJsonArray = stepJSONObject.getJSONArray("steps");
                                     for (int x=0; x<cStepJsonArray.length(); x++){
