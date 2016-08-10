@@ -9,10 +9,11 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Gravity;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -24,6 +25,7 @@ import com.example.www.transit.model.Routes;
 import com.example.www.transit.model.Steps;
 import com.example.www.transit.model.TransitDetails;
 import com.example.www.transit.model.TransitSteps;
+import com.example.www.transit.utils.Typefaces;
 import com.example.www.transit.utils.Utils;
 
 import java.util.ArrayList;
@@ -37,23 +39,19 @@ public class RouteDetails extends AppCompatActivity {
     private List<Legs> mLegsList = new ArrayList<>();
     private List<Steps> mStepsList = new ArrayList<>();
 
-    /*private LinearLayout stepsLayout;
-    private TextView stepDistance;
-    private TextView stepDuration;
-    private TextView stepHtmlInstruction;*/
-
     /*Recycler Adapter variables*/
     private RecyclerView mRecylerView;
     private RecyclerView.Adapter mRecyclerAdapter;
     private LinearLayoutManager mLinearLayoutManager;
     private Context mContext;
 
+    //private List<CustomSteps> customStepsList = new ArrayList<>();
 
     private TextView journeyDuration;
     private CardView routeCard;
 
     private LinearLayout parentLayout;
-
+    private TextView title;
     private ImageView mapsView;
     public ImageView vehicleImage, arrowRight, walkImage;
     public TextView busName, walkDistance, arrivalTime, departureTime;
@@ -64,13 +62,15 @@ public class RouteDetails extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.route_details);
+        title = (TextView) findViewById(R.id.details);
 
+        int id=0, id1=0;
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-
         routeCard = (CardView) findViewById(R.id.route_card);
         journeyDuration = (TextView) findViewById(R.id.journey_time);
         parentLayout = (LinearLayout) findViewById(R.id.parent);
         mContext = this;
+        title.setTypeface(Typefaces.get(mContext, "Roboto-Medium.ttf"));
         mRecylerView = (RecyclerView) findViewById(R.id.steps_list);
         mRecylerView.addItemDecoration(new DividerItemDecoration(
                 mContext,
@@ -81,6 +81,13 @@ public class RouteDetails extends AppCompatActivity {
         int lastView = 0;
         long distance = 0;
         LinearLayout.LayoutParams vp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams rp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams rp1 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams rp2 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams rp3 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        rp.addRule(RelativeLayout.ALIGN_PARENT_END, RelativeLayout.TRUE);
+        rp2.addRule(RelativeLayout.ALIGN_PARENT_START, RelativeLayout.TRUE);
+
         final Routes route = (Routes)getIntent().getSerializableExtra("route");
 
         LinearLayout ll = new LinearLayout(this);
@@ -88,10 +95,10 @@ public class RouteDetails extends AppCompatActivity {
         ll.setOrientation(LinearLayout.HORIZONTAL);
         ll.setPadding(4,4,4,4);
 
-        LinearLayout lw = new LinearLayout(this);
+        RelativeLayout lw = new RelativeLayout(this);
         lw.setLayoutParams(lp);
-        lw.setOrientation(LinearLayout.HORIZONTAL);
-        lw.setPadding(4,4,4,4);
+        //lw.setOrientation(LinearLayout.HORIZONTAL);
+        lw.setPadding(6,6,6,6);
 
         parentLayout.addView(ll);
         parentLayout.addView(lw);
@@ -110,6 +117,7 @@ public class RouteDetails extends AppCompatActivity {
             journeyDuration.setText(leg.duration.getText());
             mStepsList = leg.getSteps();
             for (Steps step : mStepsList){
+                id++;
                 String mode = step.getTravelMode();
                 if (mode.equals("TRANSIT")){
                     lastView++;
@@ -123,6 +131,8 @@ public class RouteDetails extends AppCompatActivity {
                     arrowRight.setId(lastView);
                     busName = new TextView(this);
                     busName.setLayoutParams(vp);
+                    busName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+                    busName.setTextColor(getResources().getColor(R.color.primaryText));
                     vehicleImage.setLayoutParams(vp);
                     vehicleImage.setMaxHeight(50);
                     vehicleImage.setMaxWidth(50);
@@ -149,20 +159,24 @@ public class RouteDetails extends AppCompatActivity {
                 }
                 if (mode.equals("WALKING")){
                     distance += step.distance.value;
-
+                    /*for (CustomSteps customStep : customStepsList){
+                        if (customStep.getHtmlInstructions() != null)
+                        Log.i("Custom Steps", customStep.getDuration().getText());
+                    }*/
                 }
             }
 
             walkDistance = new TextView(this);
-            walkDistance.setLayoutParams(vp);
-            walkDistance.setGravity(Gravity.END);
-
+            walkDistance.setLayoutParams(rp);
+            walkDistance.setId(id);
+            //walkDistance.setGravity(Gravity.END);
             walkDistance.setText(Utils.convertDistance(distance));
 
             walkImage = new ImageView(this);
             walkImage.setMaxHeight(50);
             walkImage.setMaxWidth(50);
-            walkImage.setLayoutParams(vp);
+            rp1.addRule(RelativeLayout.LEFT_OF, walkDistance.getId());
+            walkImage.setLayoutParams(rp1);
 
             Glide.with(this)
                     .load("")
@@ -171,11 +185,15 @@ public class RouteDetails extends AppCompatActivity {
                     .into(walkImage);
 
             departureTime = new TextView(this);
-            departureTime.setLayoutParams(vp);
+            departureTime.setId(id1+1);
+            departureTime.setLayoutParams(rp2);
+            departureTime.setTypeface(Typefaces.get(mContext, "Roboto-Regular.ttf"));
+            departureTime.setTextColor(getResources().getColor(R.color.secondaryText));
             departureTime.setText(leg.DepartureTime.text + " to ");
 
             arrivalTime = new TextView(this);
-            arrivalTime.setLayoutParams(vp);
+            rp3.addRule(RelativeLayout.RIGHT_OF, departureTime.getId());
+            arrivalTime.setLayoutParams(rp3);
             arrivalTime.setText(leg.arrivalTime.text);
 
             lw.addView(departureTime);
@@ -202,103 +220,6 @@ public class RouteDetails extends AppCompatActivity {
 
             }
         });
-        /*for (Legs leg : mLegsList){
-            mStepsList = leg.getSteps();
-            journeyTime.setText(leg.duration.getText());
-            *//*totalDistance.setText(leg.distance.getText());
-            sourceAddress.setText(leg.getStartAddress());
-            departureTime.setText(leg.DepartureTime.getText());*//*
-
-            for (Steps step : mStepsList){
-                LinearLayout ll = new LinearLayout(this);
-                ll.setOrientation(LinearLayout.VERTICAL);
-                ll.setPadding(4, 4, 4, 4);
-
-                stepHtmlInstruction = new TextView(this);
-                stepDistance = new TextView(this);
-                stepDuration = new TextView(this);
-
-
-                stepDistance.setLayoutParams(vp);
-                stepDuration.setLayoutParams(vp);
-                stepHtmlInstruction.setLayoutParams(vp);
-
-                switch (step.getTravelMode()){
-                    case "TRANSIT":
-
-                        TransitSteps transitStep = step.getTransitSteps();
-                        TransitDetails transitDetails = transitStep.getTransitDetails();
-                        int numStpos = transitDetails.getNumStops();
-                        Log.i("Custom Steps", String.valueOf(numStpos));
-                        TextView transitArrivalStop = new TextView(this);
-                        TextView transitArrivalTime = new TextView(this);
-                        TextView transitDepartureStop = new TextView(this);
-                        TextView transitDepartureTime = new TextView(this);
-                        TextView vehicleName = new TextView(this);
-                        TextView vehicleType = new TextView(this);
-                        TextView numStop = new TextView(this);
-
-                        transitArrivalStop.setLayoutParams(vp);
-                        transitDepartureStop.setLayoutParams(vp);
-                        transitArrivalTime.setLayoutParams(vp);
-                        transitDepartureTime.setLayoutParams(vp);
-                        vehicleName.setLayoutParams(vp);
-                        vehicleType.setLayoutParams(vp);
-                        numStop.setLayoutParams(vp);
-
-                        transitArrivalStop.setText("Arrival Stop " + transitDetails.arrivalStop.getName());
-                        transitArrivalTime.setText("Arrival Time " + transitDetails.arrivalTime.getText());
-                        transitDepartureTime.setText("Departure Time " + transitDetails.departureTime.getText());
-                        transitDepartureStop.setText("Departure Stop " + transitDetails.departureStop.getName());
-                        vehicleType.setText("Type " + transitDetails.line.vehicle.getType());
-                        vehicleName.setText("Name " + transitDetails.line.getName());
-                        numStop.setText("Stops " + String.valueOf(numStpos));
-
-                        *//*if (transitArrivalStop.getParent() != null)
-                            ((ViewGroup)transitArrivalStop.getParent()).removeView(transitArrivalStop);*//*
-
-                        ll.addView(transitArrivalStop);
-                        ll.addView(transitArrivalTime);
-                        ll.addView(transitDepartureStop);
-                        ll.addView(transitDepartureTime);
-                        ll.addView(vehicleType);
-                        ll.addView(vehicleName);
-                        ll.addView(numStop);
-                        break;
-
-                    case "WALKING":
-                        List<CustomSteps> customSteps = step.getCustomSteps();
-                        for (CustomSteps cStep : customSteps){
-                            if (cStep.htmlInstructions != null) {
-                                Log.i("Custom Steps", Utils.decodeInstructions(cStep.getHtmlInstructions()));
-                            }
-                            Log.i("Custom Steps", cStep.duration.getText());
-                            Log.i("Custom Steps", cStep.distance.getText());
-                        }
-                }
-
-                stepHtmlInstruction.setText(Utils.decodeInstructions(step.getHtmlInstructions()));
-                stepDistance.setText(step.distance.getText());
-                stepDuration.setText(step.duration.getText());
-
-                ll.addView(stepHtmlInstruction);
-                ll.addView(stepDistance);
-                ll.addView(stepDuration);
-
-                ImageView imageView = new ImageView(this);
-                imageView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                imageView.setMaxHeight(50);
-                imageView.setMaxWidth(50);
-                Glide.with(this)
-                        .load("")
-                        .placeholder(R.drawable.ic_more_vert_black_24dp)
-                        .centerCrop()
-                        .into(imageView);
-                ll.addView(imageView);
-                stepsLayout.addView(ll);
-            }
-
-        }*/
     }
 
     private void setUpRecyclerView(RecyclerView recyclerView){

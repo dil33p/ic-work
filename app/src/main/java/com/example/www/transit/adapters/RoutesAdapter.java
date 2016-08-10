@@ -1,14 +1,16 @@
 package com.example.www.transit.adapters;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Gravity;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -18,6 +20,7 @@ import com.example.www.transit.model.Routes;
 import com.example.www.transit.model.Steps;
 import com.example.www.transit.model.TransitDetails;
 import com.example.www.transit.model.TransitSteps;
+import com.example.www.transit.utils.Typefaces;
 import com.example.www.transit.utils.Utils;
 
 import java.util.ArrayList;
@@ -60,9 +63,15 @@ public class RoutesAdapter extends RecyclerView.Adapter<RoutesAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
+        Resources resources = mContext.getResources();
+        float primaryTextSize = 16;
+        float screenDensity = mContext.getResources().getDisplayMetrics().density;
+        float calculatedPrimaryText =  primaryTextSize/screenDensity;
+
         final Routes route = mRoutesList.get(position);
         final Legs leg = mLegsList.get(position);
         holder.duration.setText(leg.duration.getText());
+        holder.duration.setTypeface(Typefaces.get(mContext, "Roboto-Regular.ttf"));
         List<Steps> steps = leg.getSteps();
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,21 +89,32 @@ public class RoutesAdapter extends RecyclerView.Adapter<RoutesAdapter.ViewHolder
         ll.setOrientation(LinearLayout.HORIZONTAL);
         ll.setPadding(4,4,4,4);
         LinearLayout.LayoutParams vp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+
+        RelativeLayout.LayoutParams rp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams rp1 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams rp2 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams rp3 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        rp.addRule(RelativeLayout.ALIGN_PARENT_END, RelativeLayout.TRUE);
+        rp2.addRule(RelativeLayout.ALIGN_PARENT_START, RelativeLayout.TRUE);
         holder.linearLayout.addView(ll);
         String mode = "";
 
-        LinearLayout lw = new LinearLayout(mContext);
+        RelativeLayout lw = new RelativeLayout(mContext);
         lw.setLayoutParams(lp);
-        ll.setOrientation(LinearLayout.HORIZONTAL);
-        ll.setPadding(6,6,6,6);
+        //lw.setOrientation(LinearLayout.HORIZONTAL);
+        lw.setPadding(6,6,6,6);
 
 
         holder.linearLayout.addView(lw);
 
+
         int lastView = 0;
         long distance = 0;
+        int id = 0;
+        int id1 = 0;
         for (final Steps step : steps){
-
+            id++;
             Log.i(TAG, step.getTravelMode().toString() + position);
             /* mode += step.getTravelMode().toString() + " " + " > " + " " ;
             holder.travelMode.setText(mode);*/
@@ -112,6 +132,8 @@ public class RoutesAdapter extends RecyclerView.Adapter<RoutesAdapter.ViewHolder
 
                 holder.busName = new TextView(mContext);
                 holder.busName.setLayoutParams(vp);
+                holder.busName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+                holder.busName.setTextColor(resources.getColor(R.color.primaryText));
                 String shortName = transitDetails.line.short_name;
                 String name = transitDetails.line.name;
                 if (shortName.equals("null")){
@@ -126,13 +148,11 @@ public class RoutesAdapter extends RecyclerView.Adapter<RoutesAdapter.ViewHolder
                 holder.arrows.setMaxWidth(50);
                 holder.arrows.setMaxHeight(50);
 
-                String a = transitDetails.line.vehicle.icon;
-                String b = a.substring(2);
-                String c = "http://"+b;
-                System.out.println(b);
+                String a = "http:" + transitDetails.line.vehicle.icon;
+                System.out.println(a);
 
                 Glide.with(mContext)
-                        .load(c)
+                        .load(a)
                         .fitCenter()
                         .centerCrop()
                         .override(50,50)
@@ -161,16 +181,20 @@ public class RoutesAdapter extends RecyclerView.Adapter<RoutesAdapter.ViewHolder
         }
 
         holder.departureTime = new TextView(mContext);
-        holder.arrivalTime = new TextView(mContext);
-        holder.departureTime.setLayoutParams(vp);
-        holder.arrivalTime.setLayoutParams(vp);
+        holder.departureTime.setId(id1+1);
+        holder.departureTime.setTypeface(Typefaces.get(mContext, "Roboto-Regular.ttf"));
+        holder.departureTime.setLayoutParams(rp2);
 
+        holder.arrivalTime = new TextView(mContext);
+        rp3.addRule(RelativeLayout.RIGHT_OF, holder.departureTime.getId());
+        holder.arrivalTime.setLayoutParams(rp3);
         holder.arrivalTime.setText(leg.arrivalTime.text);
+
         holder.departureTime.setText(leg.DepartureTime.text + " to ");
 
         holder.walkDistance = new TextView(mContext);
-        holder.walkDistance.setLayoutParams(vp);
-        holder.walkDistance.setGravity(Gravity.END);
+        holder.walkDistance.setLayoutParams(rp);
+        holder.walkDistance.setId(id);
         holder.walkDistance.setText(Utils.convertDistance(distance));
 
         lw.addView(holder.departureTime);
@@ -179,7 +203,8 @@ public class RoutesAdapter extends RecyclerView.Adapter<RoutesAdapter.ViewHolder
         holder.walkImage = new ImageView(mContext);
         holder.walkImage.setMaxHeight(50);
         holder.walkImage.setMaxWidth(50);
-        holder.walkImage.setLayoutParams(vp);
+        rp1.addRule(RelativeLayout.LEFT_OF, holder.walkDistance.getId());
+        holder.walkImage.setLayoutParams(rp1);
         Glide.with(mContext)
                 .load("")
                 .placeholder(R.drawable.ic_maps_directions_walk)

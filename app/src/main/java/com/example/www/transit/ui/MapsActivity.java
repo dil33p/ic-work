@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -39,6 +40,7 @@ import com.example.www.transit.model.TransitDetails;
 import com.example.www.transit.model.TransitSteps;
 import com.example.www.transit.model.Vehicle;
 import com.example.www.transit.utils.GoogleMapsConstants;
+import com.example.www.transit.utils.Typefaces;
 import com.example.www.transit.utils.Utils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -81,7 +83,7 @@ public class MapsActivity extends AppCompatActivity implements
     //private List<Steps> mStepsList = new ArrayList<Steps>();
 
     private RequestQueue mRequestQueue;
-
+    private TextView mTitle;
     private String url;
     Context context;
 
@@ -98,6 +100,10 @@ public class MapsActivity extends AppCompatActivity implements
         mRecyclerAdapter = new RoutesAdapter(mRoutesList, mLegsList, context, this);
         mLinearLayoutManager = new LinearLayoutManager(this);
 
+        //Typeface tf = Typeface.createFromAsset(getAssets(), "Roboto-Medium.ttf");
+
+        mTitle = (TextView) findViewById(R.id.title);
+        mTitle.setTypeface(Typefaces.get(this, "Roboto-Medium.ttf"));
         //url = "https://maps.googleapis.com/maps/api/directions/json?origin=Mathikere,Bengaluru,Karnataka560054&destination=ElectronicCity,Phase1,BusStop,HewlettPackardAvenue,KonappanaAgrahara,ElectronicCity,Bengaluru,Karnataka560100&mode=driving&alternatives=true&key=" + GoogleMapsConstants.API_KEY;
 
         findRoutes = (Button) findViewById(R.id.find);
@@ -396,8 +402,6 @@ public class MapsActivity extends AppCompatActivity implements
                                         JSONObject cEndLocationJsonObject = cStepJsonObject.getJSONObject("end_location");
                                         Location cEndLocation = new Location(cEndLocationJsonObject.getLong("lat"), cEndLocationJsonObject.getLong("lng"));
 
-
-
                                         JSONObject cPolylinesJsonObject = cStepJsonObject.getJSONObject("polyline");
                                         String codedString = cPolylinesJsonObject.getString("points");
 
@@ -416,9 +420,7 @@ public class MapsActivity extends AppCompatActivity implements
                                             String htmlInstructions = cStepJsonObject.getString("html_instructions");
                                             cStep.setHtmlInstructions(htmlInstructions);
                                         }
-
-                                        customStepsList.add(cStep);
-                                        //step.addCustomSteps(cStep);
+                                        customStepsList.add(cStep);//step.addCustomSteps(cStep);
                                     }
                                     step.setCustomSteps(customStepsList);
                                 }

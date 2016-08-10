@@ -10,31 +10,36 @@
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:elevation="@dimen/appbar_elevation"
+        app:elevation="8dp"
         >
         
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            app:contentInsetStart="0dp"
+            app:contentInsetLeft="0dp"
+            android:contentInsetStart="0dp"
+            android:contentInsetLeft="0dp">
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:padding="16dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:id="@+id/logo"
-                    android:gravity="center_horizontal"
-                    android:padding="@dimen/appbar_elevation">
+                    >
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/app_name"
-                        android:textSize="24sp"
+                        android:textSize="20sp"
+                        android:id="@+id/title"
                         android:textColor="#FFF"
                         />
 
@@ -47,7 +52,6 @@
                     android:orientation="vertical"
                     android:layout_below="@+id/logo"
                     android:id="@+id/after"
-                    android:padding="16dp"
                     >
 
                     <AutoCompleteTextView
@@ -66,14 +70,19 @@
                         android:hint="@string/autocomplete_hint_des"
                         android:singleLine="true"/>
 
-                </LinearLayout>
+                    <Button
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:minWidth="88dp"
+                        android:height="36dp"
+                        android:text="find routes"
+                        android:id="@+id/find"
+                        style="@style/Widget.AppCompat.Button.Colored"
+                        android:textColor="#FFFFFF"
+                        android:layout_gravity="start"
+                        />
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/after"
-                    android:text="find routes"
-                    android:id="@+id/find"/>
+                </LinearLayout>
 
             </RelativeLayout>
 

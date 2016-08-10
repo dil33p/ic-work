@@ -23,13 +23,15 @@
             android:orientation="vertical"
             android:id="@+id/parent_layout"
             android:foreground="?android:attr/selectableItemBackground"
-            android:clickable="true">
+            android:clickable="true"
+            >
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:id="@+id/journey_time"
-                android:text="1hr 20min"
+                android:textSize="16sp"
+                android:textColor="@color/primaryText"
                 android:layout_gravity="end"/>
 
         </LinearLayout>
